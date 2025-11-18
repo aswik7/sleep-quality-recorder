@@ -1,2 +1,1 @@
-Demo Video URL - https://youtu.be/aczuRVu5Jsk
 [Watch Demo Video](https://youtu.be/aczuRVu5Jsk)
