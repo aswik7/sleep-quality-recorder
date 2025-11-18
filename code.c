@@ -9,10 +9,10 @@
 
 typedef struct {
     char date[DATE_LEN];    
-    double hours; // format hours slept
+    double hours;
     int quality;    // from 1-10
-    double screen;          // screen hours
-    int caffeine;   // mg
+    double screen;    
+    int caffeine;   //in mg
     char note[NOTE_LEN];
 } SleepEntry;
 
@@ -28,15 +28,13 @@ void read_line(char *buf, int n) {
     if (len && buf[len-1] == '\n') buf[len-1] = '\0';
 }
 
-/* File handling (simple CSV) */
-
 int save_db(const SleepDB *db) {
     FILE *f = fopen(FNAME, "w");
     if (!f) { perror("fopen"); return 0; }
     fprintf(f, "date,hours,quality,screen,caffeine,note\n");
     for (int i = 0; i < db->count; ++i) {
         const SleepEntry *e = &db->arr[i];
-        // replace commas in note with semicolon
+       
         char note_safe[NOTE_LEN];
         strncpy(note_safe, e->note, NOTE_LEN-1); note_safe[NOTE_LEN-1] = '\0';
         for (char *p = note_safe; *p; ++p) if (*p == ',') *p = ';';
@@ -51,7 +49,7 @@ int load_db(SleepDB *db) {
     FILE *f = fopen(FNAME, "r");
     if (!f) return 0;
     char line[256];
-    // skip header
+
     if (!fgets(line, sizeof(line), f)) { fclose(f); return 0; }
     db->count = 0;
     while (db->count < MAX_ENTRIES && fgets(line, sizeof(line), f)) {
@@ -72,7 +70,7 @@ int load_db(SleepDB *db) {
 double compute_score(const SleepEntry *e) {
     double score = 0.0;
     if (e->hours < 8.0) score += (8.0 - e->hours) * 10.0;
-    else score += (e->hours - 8.0) * 2.0; // small penalty for big oversleep
+    else score += (e->hours - 8.0) * 2.0; 
     score += (10 - e->quality) * 2.0;
     score += e->screen * 2.0;
     score += (double)e->caffeine / 100.0;
@@ -81,7 +79,7 @@ double compute_score(const SleepEntry *e) {
     return score;
 }
 
-/* Average fatigue of last n entries */
+
 double avg_recent_score(const SleepDB *db, int n) {
     if (db->count == 0) return 0.0;
     int used = n < db->count ? n : db->count;
@@ -170,3 +168,4 @@ int main(void) {
     menu(&db);
     return 0;
 }
+
